@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { fetchRandomRecipes } from "../api/fetchRecipes";
-import { Card, ListItem, Button, Icon } from "react-native-elements";
+import { Card } from "react-native-elements";
+import { AntDesign } from "@expo/vector-icons";
+import { tabIconColor } from "../constants";
 
 export class AllRecipes extends Component {
   state = {
@@ -30,9 +32,10 @@ export class AllRecipes extends Component {
           <Card.Title>{recipe.title}</Card.Title>
           <Card.Divider />
           <Card.Image source={{ uri: recipe.image }} />
-          <Text style={{ marginBottom: 10 }}>
-            The idea with React Native Elements is more about component
-            structure than actual design.
+
+          <Text style={{ marginTop: 10 }}>
+            <AntDesign name="clockcircleo" size={15} color={tabIconColor} />{" "}
+            {recipe.readyInMinutes} min
           </Text>
         </Card>
       </TouchableOpacity>
