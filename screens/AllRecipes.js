@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+} from "react-native";
 import { fetchRandomRecipes } from "../api/fetchRecipes";
 import { Card } from "react-native-elements";
 import { AntDesign } from "@expo/vector-icons";
@@ -27,7 +33,12 @@ export class AllRecipes extends Component {
 
   renderCards = (recipe) => {
     return (
-      <TouchableOpacity key={recipe.id}>
+      <TouchableOpacity
+        key={recipe.id}
+        onPress={() => {
+          this.props.navigation.navigate("RecipeDetails", recipe);
+        }}
+      >
         <Card>
           <Card.Title>{recipe.title}</Card.Title>
           <Card.Divider />
@@ -45,7 +56,7 @@ export class AllRecipes extends Component {
   render() {
     return (
       <View>
-        <Text> All Recipes </Text>
+        <Text style={styles.titleText}> Today's Recipes </Text>
         <ScrollView>
           {this.state.recipes.map((recipe) => this.renderCards(recipe))}
         </ScrollView>
@@ -53,5 +64,11 @@ export class AllRecipes extends Component {
     );
   }
 }
+const styles = StyleSheet.create({
+  titleText: {
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+  },
+});
 
 export default AllRecipes;
