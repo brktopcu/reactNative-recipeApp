@@ -10,13 +10,13 @@ import { fetchRandomRecipes } from "../api/fetchRecipes";
 import { Card } from "react-native-elements";
 import { AntDesign } from "@expo/vector-icons";
 import { primaryColor, tabIconColor } from "../constants";
-import * as SQLite from "expo-sqlite";
-
-const db = SQLite.openDatabase("db.db");
+import { db } from "../sqlite";
 
 export class AllRecipes extends Component {
   state = {
     recipes: [],
+    changeColor: false,
+    favouriteRecipeIds: [],
   };
 
   getRecipes = async () => {
@@ -31,18 +31,25 @@ export class AllRecipes extends Component {
   };
 
   componentDidMount() {
+    let favouriteRecipeIds = [];
+
     db.transaction((tx) => {
       tx.executeSql(
         "create table if not exists favourites (id integer primary key not null, title text, ingredients text, instructions text);"
       );
     });
+
+    db.transaction((tx) => {
+      tx.executeSql("select * from favourites", [], (tx, results) => {
+        for (let index = 0; index < results.rows.length; index++) {
+          favouriteRecipeIds.push(results.rows[index].id);
+        }
+        this.setState({ favouriteRecipeIds: favouriteRecipeIds });
+      });
+    });
+
     this.getRecipes();
   }
-
-  isFavourite = (recipe) => {
-    //query sqlite database to see if it exists in favourites
-    return false;
-  };
 
   handleSetFavourite = (recipe) => {
     let ingredientNames = recipe.extendedIngredients.map(
@@ -51,15 +58,20 @@ export class AllRecipes extends Component {
     let instructions = recipe.analyzedInstructions[0].steps.map(
       (instruction) => instruction.step
     );
-    console.log(recipe);
+
     db.transaction((tx) => {
       tx.executeSql(
         "insert into favourites (id, title, ingredients, instructions) values (?, ?, ?, ?)",
-        [recipe.id, recipe.title, ingredientNames, instructions]
+        [recipe.id, recipe.title, ingredientNames, instructions],
+        () => {
+          this.setState((prevState) => ({
+            favouriteRecipeIds: [...prevState.favouriteRecipeIds, recipe.id],
+          }));
+        }
       );
-      tx.executeSql("select * from favourites", [], (tx, results) => {
-        console.log(results);
-      });
+      //tx.executeSql("select * from favourites", [], (tx, results) => {
+      //  console.log(results.rows);
+      //});
     });
   };
 
@@ -76,7 +88,11 @@ export class AllRecipes extends Component {
             <AntDesign
               name="heart"
               size={24}
-              color={this.isFavourite(recipe) ? "orange" : "grey"}
+              color={
+                this.state.favouriteRecipeIds.includes(recipe.id)
+                  ? "orange"
+                  : "grey"
+              }
               style={{ marginRight: 10 }}
               onPress={() => {
                 this.handleSetFavourite(recipe);
