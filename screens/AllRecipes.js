@@ -10,12 +10,11 @@ import { fetchRandomRecipes } from "../api/fetchRecipes";
 import { Card } from "react-native-elements";
 import { AntDesign } from "@expo/vector-icons";
 import { primaryColor, tabIconColor } from "../constants";
-import { db } from "../sqlite";
 
 export class AllRecipes extends Component {
   state = {
     recipes: [],
-    changeColor: false,
+    favouriteRecipes: [],
     favouriteRecipeIds: [],
   };
 
@@ -31,49 +30,10 @@ export class AllRecipes extends Component {
   };
 
   componentDidMount() {
-    let favouriteRecipeIds = [];
-
-    db.transaction((tx) => {
-      tx.executeSql(
-        "create table if not exists favourites (id integer primary key not null, title text, ingredients text, instructions text);"
-      );
-    });
-
-    db.transaction((tx) => {
-      tx.executeSql("select * from favourites", [], (tx, results) => {
-        for (let index = 0; index < results.rows.length; index++) {
-          favouriteRecipeIds.push(results.rows[index].id);
-        }
-        this.setState({ favouriteRecipeIds: favouriteRecipeIds });
-      });
-    });
-
     this.getRecipes();
   }
 
-  handleSetFavourite = (recipe) => {
-    let ingredientNames = recipe.extendedIngredients.map(
-      (ingredient) => ingredient.original
-    );
-    let instructions = recipe.analyzedInstructions[0].steps.map(
-      (instruction) => instruction.step
-    );
-
-    db.transaction((tx) => {
-      tx.executeSql(
-        "insert into favourites (id, title, ingredients, instructions) values (?, ?, ?, ?)",
-        [recipe.id, recipe.title, ingredientNames, instructions],
-        () => {
-          this.setState((prevState) => ({
-            favouriteRecipeIds: [...prevState.favouriteRecipeIds, recipe.id],
-          }));
-        }
-      );
-      //tx.executeSql("select * from favourites", [], (tx, results) => {
-      //  console.log(results.rows);
-      //});
-    });
-  };
+  handleSetFavourite = (recipe) => {};
 
   renderCards = (recipe) => {
     return (
@@ -85,19 +45,23 @@ export class AllRecipes extends Component {
       >
         <Card>
           <View style={{ flexDirection: "row" }}>
-            <AntDesign
-              name="heart"
-              size={24}
-              color={
-                this.state.favouriteRecipeIds.includes(recipe.id)
-                  ? "orange"
-                  : "grey"
-              }
-              style={{ marginRight: 10 }}
+            <TouchableOpacity
               onPress={() => {
                 this.handleSetFavourite(recipe);
               }}
-            />
+            >
+              <AntDesign
+                name="heart"
+                size={24}
+                color={
+                  "grey"
+                  //this.state.favouriteRecipeIds.includes(recipe.id)
+                  //  ? "orange"
+                  //  : "grey"
+                }
+                style={{ marginRight: 10 }}
+              />
+            </TouchableOpacity>
             <Card.Title>{recipe.title}</Card.Title>
           </View>
           <Card.Divider style={styles.divider} />
@@ -117,7 +81,8 @@ export class AllRecipes extends Component {
     return (
       <View>
         <ScrollView>
-          {this.state.recipes.map((recipe) => this.renderCards(recipe))}
+          {this.state.recipes &&
+            this.state.recipes.map((recipe) => this.renderCards(recipe))}
         </ScrollView>
       </View>
     );

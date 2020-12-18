@@ -3,13 +3,7 @@ import { Text, View } from "react-native";
 import { db } from "../sqlite";
 
 export class Favourites extends Component {
-  componentDidMount() {
-    db.transaction((tx) => {
-      tx.executeSql("select * from favourites", [], (tx, results) => {
-        console.log(results.rows);
-      });
-    });
-  }
+  componentDidMount() {}
   render() {
     return (
       <View>

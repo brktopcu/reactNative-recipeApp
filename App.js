@@ -1,10 +1,13 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { appBackgroundColor, primaryColor } from "./constants";
+import { primaryColor } from "./constants";
 import TabNavigation from "./navigation/TabNavigation";
 import { NavigationContainer } from "@react-navigation/native";
 import { ThemeProvider } from "react-native-elements";
+import AuthStack from "./navigation/AuthStack";
+import * as firebase from "firebase";
+import { firebaseConfig } from "./firebase";
 
 const theme = {
   colors: {
@@ -12,17 +15,32 @@ const theme = {
   },
 };
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <ThemeProvider theme={theme}>
-        <StatusBar style="auto" />
-        <NavigationContainer>
-          <TabNavigation />
-        </NavigationContainer>
-      </ThemeProvider>
-    </View>
-  );
+export class App extends Component {
+  state = {
+    isAuthenticated: false,
+  };
+
+  componentDidMount() {
+    firebase.initializeApp(firebaseConfig);
+    firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  }
+
+  onAuthStateChanged = (user) => {
+    this.setState({ isAuthenticated: !!user });
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <ThemeProvider theme={theme}>
+          <StatusBar style="auto" />
+          <NavigationContainer>
+            {this.state.isAuthenticated ? <TabNavigation /> : <AuthStack />}
+          </NavigationContainer>
+        </ThemeProvider>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -31,3 +49,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+export default App;
