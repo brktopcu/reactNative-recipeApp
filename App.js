@@ -15,13 +15,15 @@ const theme = {
   },
 };
 
+firebase.initializeApp(firebaseConfig);
+export const db = firebase.firestore();
+
 export class App extends Component {
   state = {
     isAuthenticated: false,
   };
 
   componentDidMount() {
-    firebase.initializeApp(firebaseConfig);
     firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
   }
 

@@ -10,12 +10,16 @@ import { fetchRandomRecipes } from "../api/fetchRecipes";
 import { Card } from "react-native-elements";
 import { AntDesign } from "@expo/vector-icons";
 import { primaryColor, tabIconColor } from "../constants";
+import * as firebase from "firebase";
+import "firebase/firestore";
+import { db } from "../App";
 
 export class AllRecipes extends Component {
   state = {
     recipes: [],
     favouriteRecipes: [],
     favouriteRecipeIds: [],
+    uid: "",
   };
 
   getRecipes = async () => {
@@ -31,9 +35,49 @@ export class AllRecipes extends Component {
 
   componentDidMount() {
     this.getRecipes();
+    this.setState({ uid: `${firebase.auth().currentUser.uid}` });
+    this.getFavouriteRecipes();
   }
 
-  handleSetFavourite = (recipe) => {};
+  getFavouriteRecipes = async () => {
+    let favourites = [];
+    let favouriteIds = [];
+    const snapshot = await db
+      .collection("userData")
+      .doc(`${firebase.auth().currentUser.uid}`)
+      .collection("favouriteRecipes")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          favourites.push(doc.data());
+        });
+      });
+
+    this.setState({ favouriteRecipes: favourites });
+    favourites.map((item) => favouriteIds.push(item.id));
+    this.setState({ favouriteRecipeIds: favouriteIds });
+  };
+
+  handleSetFavourite = (recipe) => {
+    const { uid } = this.state;
+
+    db.collection("userData")
+      .doc(uid)
+      .collection("favouriteRecipes")
+      .doc(`${recipe.id}`)
+      .set({
+        id: recipe.id,
+        title: recipe.title,
+        image: recipe.image,
+        instructions: recipe.instructions,
+      });
+
+    this.setState((prevState) => {
+      return {
+        favouriteRecipeIds: [...prevState.favouriteRecipeIds, recipe.id],
+      };
+    });
+  };
 
   renderCards = (recipe) => {
     return (
@@ -54,10 +98,9 @@ export class AllRecipes extends Component {
                 name="heart"
                 size={24}
                 color={
-                  "grey"
-                  //this.state.favouriteRecipeIds.includes(recipe.id)
-                  //  ? "orange"
-                  //  : "grey"
+                  this.state.favouriteRecipeIds.includes(recipe.id)
+                    ? "orange"
+                    : "grey"
                 }
                 style={{ marginRight: 10 }}
               />
