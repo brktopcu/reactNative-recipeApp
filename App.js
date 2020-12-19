@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { Component } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, LogBox } from "react-native";
 import { primaryColor } from "./constants";
 import TabNavigation from "./navigation/TabNavigation";
 import { NavigationContainer } from "@react-navigation/native";
@@ -14,6 +14,11 @@ const theme = {
     primary: primaryColor,
   },
 };
+
+if (LogBox) {
+  LogBox.ignoreLogs(["Setting a timer"]);
+  LogBox.ignoreLogs(["Require cycle"]);
+}
 
 firebase.initializeApp(firebaseConfig);
 export const db = firebase.firestore();

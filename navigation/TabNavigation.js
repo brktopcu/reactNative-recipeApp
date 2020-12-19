@@ -6,8 +6,8 @@ import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { tabBackgroundColor, tabIconColor } from "../constants";
 import { MaterialIcons } from "@expo/vector-icons";
-import Favourites from "../screens/Favourites";
 import AllRecipesStack from "./AllRecipesStack";
+import FavouriteStack from "./FavouriteStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -41,7 +41,7 @@ export class TabNavigation extends Component {
       >
         <Tab.Screen name="AllRecipes" component={AllRecipesStack} />
         <Tab.Screen name="FilterRecipe" component={FilterRecipe} />
-        <Tab.Screen name="Favourites" component={Favourites} />
+        <Tab.Screen name="Favourites" component={FavouriteStack} />
       </Tab.Navigator>
     );
   }

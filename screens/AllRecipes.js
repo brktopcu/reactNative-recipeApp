@@ -70,6 +70,7 @@ export class AllRecipes extends Component {
         title: recipe.title,
         image: recipe.image,
         instructions: recipe.instructions,
+        readyInMinutes: recipe.readyInMinutes,
       });
 
     this.setState((prevState) => {
