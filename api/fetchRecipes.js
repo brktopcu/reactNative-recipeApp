@@ -7,3 +7,11 @@ export const fetchRandomRecipes = async () => {
   const recipes = await response.json();
   return recipes;
 };
+
+export const searchRecipes = async (query) => {
+  const response = await fetch(
+    rootApiUrl + "/recipes/complexSearch" + "?apiKey=" + apiKey + "&query=" + query + "&addRecipeInformation=true" + "&number=10"
+  );
+  const results = await response.json();
+  return results;
+};
