@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { fetchRandomRecipes } from "../api/fetchRecipes";
-import { Card } from "react-native-elements";
+import { Button, Card } from "react-native-elements";
 import { AntDesign } from "@expo/vector-icons";
 import { primaryColor, tabIconColor } from "../constants";
 import * as firebase from "firebase";
@@ -30,6 +30,19 @@ export class AllRecipes extends Component {
       this.setState({ recipes: recipes.recipes });
     } catch (error) {
       console.log(error);
+
+      const snapshot = await db
+        .collection("recipes")
+        .get()
+        .then(
+          (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              recipes.push(doc.data());
+            });
+            this.setState({ recipes: recipes });
+          },
+          (error) => console.log(error)
+        );
     }
   };
 
