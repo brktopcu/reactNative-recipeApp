@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
   searchBarContainer: {
     color: "black",
     flex: 0.8,
-    marginLeft: 20,
     paddingTop: 20,
     height: 80,
     backgroundColor: "white",
@@ -106,7 +105,9 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     flex: 0.2,
-    paddingTop: 30,
+    paddingTop: 20,
+    height: 50,
+    width: 50,
   },
   searchResults: { marginTop: 70 },
   divider: { backgroundColor: primaryColor, height: 1.5 },
