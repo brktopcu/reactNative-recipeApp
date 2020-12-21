@@ -3,31 +3,30 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  StyleSheet
+  StyleSheet,
+  ActivityIndicator,
 } from "react-native";
-import { AntDesign } from '@expo/vector-icons';
-import { SearchBar, ListItem, Card } from "react-native-elements";
+import { AntDesign } from "@expo/vector-icons";
+import { SearchBar, Card } from "react-native-elements";
 import { searchRecipes } from "../api/fetchRecipes";
-import { tabIconColor, tabBackgroundColor } from "../constants";
+import { tabIconColor, tabBackgroundColor, primaryColor } from "../constants";
 export class FilterRecipe extends Component {
   state = {
     data: [],
-    searchText: ''
-  }
+    searchText: "",
+    loading: false,
+  };
 
   handleSearch = async () => {
     try {
-      const recipes = await searchRecipes(this.state.searchText);
-      this.setState({ data: recipes });
-      this.renderRecipes()
+      this.setState({ loading: true }, async () => {
+        const recipes = await searchRecipes(this.state.searchText);
+        this.setState({ data: recipes, loading: false });
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
-
-  // onPressRecipe = results => {
-  //   this.props.navigation.navigate('RecipeDetails', { results });
-  // };
+  };
 
   renderCards = (recipe) => {
     return (
@@ -48,65 +47,68 @@ export class FilterRecipe extends Component {
     );
   };
 
-
   render() {
     return (
-      <View style={{ marginTop: 25, flex: 1, backgroundColor: 'white' }}>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.8, marginLeft: 20 }}>
-            <SearchBar
-              style={styles.searchBar}
-              platform="android"
-              placeholder='Search..'
-              lightTheme
-              searchIcond
-              clearIcon
-              inputContainerStyle={{
-                backgroundColor: '#EDEDED'
-              }}
-              inputStyle={{
-                backgroundColor: '#EDEDED',
-                borderRadius: 10,
-                color: 'black'
-              }}
-              onChangeText={text => this.setState({ searchText: text })}
-              value={this.state.searchText}
-            />
-          </View>
-          <View
-            style={{
-              flex: 0.2, alignItems: 'center', marginTop: 20,
-              alignSelf: 'flex-start'
-            }}>
-            <AntDesign name="enter" size={32} color="black"
-              onPress={this.handleSearch}
-              color={tabIconColor}
-            />
-          </View>
+      <View style={styles.container}>
+        <View style={styles.searchView}>
+          <SearchBar
+            containerStyle={styles.searchBarContainer}
+            inputStyle={styles.searchInput}
+            inputContainerStyle={styles.searchInputContainer}
+            placeholder="Search.."
+            onChangeText={(text) => this.setState({ searchText: text })}
+            value={this.state.searchText}
+            round
+          />
+          <TouchableOpacity
+            onPress={this.handleSearch}
+            style={styles.searchIcon}
+          >
+            <AntDesign name="enter" size={32} color={tabIconColor} />
+          </TouchableOpacity>
         </View>
-        <View style={{ marginTop: 50 }}>
-          <ScrollView>
-            {this.state.data.results &&
-              this.state.data.results.map((recipe) => this.renderCards(recipe))}
-          </ScrollView>
-        </View>
+
+        <ScrollView style={styles.searchResults}>
+          {this.state.loading && (
+            <ActivityIndicator size="large" color={primaryColor} />
+          )}
+          {this.state.data.results &&
+            this.state.data.results.map((recipe) => this.renderCards(recipe))}
+        </ScrollView>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-
+  container: { flex: 1, backgroundColor: "white" },
+  searchView: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
   },
-  searchBar: {
-
+  searchBarContainer: {
+    color: "black",
+    flex: 0.8,
+    marginLeft: 20,
+    paddingTop: 20,
+    height: 80,
+    backgroundColor: "white",
+    borderTopColor: "white",
+    borderBottomColor: "white",
   },
-  photo: {
-
+  searchInputContainer: {
+    backgroundColor: "white",
   },
-  title: {
-
-  }
-})
+  searchInput: {
+    borderRadius: 10,
+    backgroundColor: "#EDEDED",
+  },
+  searchIcon: {
+    flex: 0.2,
+    paddingTop: 30,
+  },
+  searchResults: { marginTop: 70 },
+  divider: { backgroundColor: primaryColor, height: 1.5 },
+});
 export default FilterRecipe;

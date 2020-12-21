@@ -8,6 +8,7 @@ import { tabBackgroundColor, tabIconColor } from "../constants";
 import { MaterialIcons } from "@expo/vector-icons";
 import AllRecipesStack from "./AllRecipesStack";
 import FavouriteStack from "./FavouriteStack";
+import FilterRecipesStack from "./FilterRecipesStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -40,7 +41,7 @@ export class TabNavigation extends Component {
         }}
       >
         <Tab.Screen name="AllRecipes" component={AllRecipesStack} />
-        <Tab.Screen name="FilterRecipe" component={FilterRecipe} />
+        <Tab.Screen name="FilterRecipe" component={FilterRecipesStack} />
         <Tab.Screen name="Favourites" component={FavouriteStack} />
       </Tab.Navigator>
     );

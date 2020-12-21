@@ -78,13 +78,7 @@ export class AllRecipes extends Component {
       .doc(uid)
       .collection("favouriteRecipes")
       .doc(`${recipe.id}`)
-      .set({
-        id: recipe.id,
-        title: recipe.title,
-        image: recipe.image,
-        instructions: recipe.instructions,
-        readyInMinutes: recipe.readyInMinutes,
-      });
+      .set(recipe);
 
     this.setState((prevState) => {
       return {

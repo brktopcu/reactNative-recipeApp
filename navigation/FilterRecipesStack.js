@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import RecipeDetails from "../screens/RecipeDetails";
-import AllRecipes from "../screens/AllRecipes";
 import { headerColor, secondaryColor } from "../constants";
 import { Icon } from "react-native-elements";
 import * as firebase from "firebase";
+import FilterRecipe from "../screens/FilterRecipe";
 
 const Stack = createStackNavigator();
 
-export class AllRecipesStack extends Component {
+export class FilterRecipesStack extends Component {
   handleLogout = () => {
     firebase.auth().signOut();
   };
@@ -36,8 +36,8 @@ export class AllRecipesStack extends Component {
       >
         <Stack.Screen
           name="AllRecipes"
-          component={AllRecipes}
-          options={{ title: "Today's Recipes" }}
+          component={FilterRecipe}
+          options={{ title: "Search Recipes" }}
         />
         <Stack.Screen
           name="RecipeDetails"
@@ -49,4 +49,4 @@ export class AllRecipesStack extends Component {
   }
 }
 
-export default AllRecipesStack;
+export default FilterRecipesStack;
