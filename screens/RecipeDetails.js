@@ -1,5 +1,6 @@
 import React, { Component, useState } from "react";
-import { Text, View, StyleSheet, FlatList } from "react-native";
+import { Text, View, StyleSheet, FlatList, ScrollView } from "react-native";
+import { Card } from "react-native-elements";
 
 export class RecipeDetails extends Component {
 
@@ -9,96 +10,89 @@ export class RecipeDetails extends Component {
     this.props.navigation.setOptions({
       title: this.props.route.params.title,
     });
-  }
-
-  _keyExtractor = this.route.params.id;
-  _renderItem = (item) => {
-
-    const  { title,
-      readyInMinutes,
-      aggregateLikes,
-      healthScore,
-      spoonacularScore,
-      cheap,
-      glutenFree,
-      ketogenic,
-      sustainable,
-      vegan,
-      vegetarian,
-      veryHealthy,
-      veryPopular } = item;
-
-
-
-    const groups = this.props.route.param.extendedIngredients.map((items, index) => {
-      return
-      (
-        <Text>({items.orginal})</Text>
-      )
-    })
-
-    //const {} = item.groups;
-    return (
-      <View>
-        <View style={styles.cardContainerStyle}>
-          <View style={{ paddingRight: 5 }}>
-
-            <Text style={styles.cardTextStyle}>
-
-            <Text>title: {title}</Text>
-            <Text>readyInMinutes: {readyInMinutes}</Text>
-            <Text>aggregateLikes: {aggregateLikes}</Text>
-            <Text>healthScore: {healthScore}</Text>
-            <Text>spoonacularScore: {spoonacularScore}</Text>
-            <Text>cheap: {cheap}</Text>
-            <Text>glutenFree: {glutenFree}</Text>
-            <Text>ketogenic: {ketogenic}</Text>
-            <Text>sustainable: {sustainable}</Text>
-            <Text>vegan: {vegan}</Text>
-            <Text>vegetarian: {vegetarian}</Text>
-            <Text>veryHealthy: {veryHealthy}</Text>
-            <Text>veryPopular: {veryPopular}</Text>
-              {groups}
-
-            </Text>
-
-          </View>
-         
-        </View>
-      </View>
-    );
   };
 
+  state = {
+    RecipeProperties: [
+      { title: 'yemek ismi', value: this.props.route.params.title },
+      { title: 'readyInMinutes', value: this.props.route.params.readyInMinutes },
+      { title: 'aggregateLikes', value: this.props.route.params.aggregateLikes },
+      { title: 'healthScore', value: this.props.route.params.healthScore },
+      { title: 'spoonacularScore', value: this.props.route.params.spoonacularScore },
+      { title: 'cheap', value: Istrue(this.props.route.params.cheap) },
+      { title: 'glutenFree', value: Istrue(this.props.route.params.glutenFree) },
+      { title: 'ketogenic', value: Istrue(this.props.route.params.ketogenic) },
+      { title: 'sustainable', value: Istrue(this.props.route.params.sustainable) },
+      { title: 'vegan', value: Istrue(this.props.route.params.vegan) },
+      { title: 'vegetarian', value: Istrue(this.props.route.params.vegetarian) },
+      { title: 'veryHealthy', value: Istrue(this.props.route.params.veryHealthy) },
+      { title: 'veryPopular', value: Istrue(this.props.route.params.veryPopular) }],
+
+  };
+
+  groups = this.props.route.params.extendedIngredients.map((items, index) => {
+    return (<Text style={styles.text}>({items.original})</Text>)
+  })
 
   render() {
     return (
       <View>
         <Card>
 
-          <Card.Divider />
-          <Card.Image source={{ uri: recipe.image }} />
-          <FlatList data={this.props.route.params} renderItem={_renderItem} keyExtractor={_keyExtractor}>
 
-          </FlatList>
+          <Card.Image source={{ uri: this.props.route.params.image }} />
 
 
         </Card>
-
+        <View style={styles.container}>
+          <ScrollView >
+            <Text style={styles.header}> Özellikler</Text>
+            <FlatList data={this.state.RecipeProperties} renderItem={({ item }) => (<Text style={styles.text}>{item.title}:{item.value}</Text>)} />
+            <Text style={styles.header}> Malzemeler</Text>
+            {this.groups}
+          </ScrollView>
+        </View>
       </View>
     );
   }
+
+
+
 }
+
+export default RecipeDetails;
 const styles = StyleSheet.create({
   text:
   {
     padding: 16,
     marginTop: 10,
     borderColor: '#bbb',
-    borderWidth: 1,
+    textAlign: 'center',
     borderStyle: 'dashed',
-    borderRadius: 10
-  }
+    borderRadius: 10,
+    backgroundColor: '#fbaed2',
+  },
+  header:
+  {
+    padding: 16,
+    marginTop: 10,
+    borderColor: '#bbb',
+    borderStyle: 'dashed',
+    borderRadius: 10,
+    backgroundColor: '#ffa812',
+  },
+  container: {
+    padding: 24,
+
+  },
 
 });
 
-export default RecipeDetails;
+const Istrue = (Bool) => {
+  return (
+    <View>
+      <Text >{Bool ? " Evet" : " Hayır"}
+      </Text>
+    </View>
+  );
+}
