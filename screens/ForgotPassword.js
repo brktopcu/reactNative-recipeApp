@@ -25,6 +25,7 @@ export class ForgotPassword extends Component {
 
   render() {
     return (
+      <TouchableWithoutFeedback onPress={()=>{Keyboard.dismiss()}}>
       <View style={styles.container}>
         <Input
           placeholder="E-mail"
@@ -34,6 +35,7 @@ export class ForgotPassword extends Component {
         />
         <Button title="Reset password" onPress={this.handleResetPassword} />
       </View>
+       </TouchableWithoutFeedback>
     );
   }
 }
