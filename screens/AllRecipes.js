@@ -13,6 +13,7 @@ import { primaryColor, tabIconColor } from "../constants";
 import * as firebase from "firebase";
 import "firebase/firestore";
 import { db } from "../App";
+import _ from "lodash";
 
 export class AllRecipes extends Component {
   state = {
@@ -27,22 +28,25 @@ export class AllRecipes extends Component {
 
     try {
       recipes = await fetchRandomRecipes();
-      this.setState({ recipes: recipes.recipes });
+      this.setState({ recipes: recipes.recipes }, async () => {
+        if (_.isEmpty(this.state.recipes)) {
+          let recipes = [];
+          const snapshot = await db
+            .collection("recipes")
+            .get()
+            .then(
+              (querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                  recipes.push(doc.data());
+                });
+                this.setState({ recipes: recipes });
+              },
+              (error) => console.log(error)
+            );
+        }
+      });
     } catch (error) {
       console.log(error);
-
-      const snapshot = await db
-        .collection("recipes")
-        .get()
-        .then(
-          (querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              recipes.push(doc.data());
-            });
-            this.setState({ recipes: recipes });
-          },
-          (error) => console.log(error)
-        );
     }
   };
 
@@ -120,7 +124,7 @@ export class AllRecipes extends Component {
           <Text
             style={{ marginTop: 10, alignSelf: "center", fontWeight: "bold" }}
           >
-            <AntDesign name="clockcircleo" size={15} color={tabIconColor} />{" "}
+            <AntDesign name="clockcircle" size={15} color={primaryColor} />{" "}
             {recipe.readyInMinutes} min
           </Text>
         </Card>
