@@ -83,19 +83,17 @@ export class Favourites extends Component {
 
   render() {
     return (
-      <View>
-        <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.handleRefresh}
-            />
-          }
-        >
-          {this.state.favRecipes &&
-            this.state.favRecipes.map((recipe) => this.renderCards(recipe))}
-        </ScrollView>
-      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+          />
+        }
+      >
+        {this.state.favRecipes &&
+          this.state.favRecipes.map((recipe) => this.renderCards(recipe))}
+      </ScrollView>
     );
   }
 }
